@@ -24,7 +24,7 @@ git init
 git add .
 git commit -m "Agenda Pastoral"
 git branch -M main
-git remote add origin https://github.com/gabriellimasouzza/agenda-pastoral.git
+git remote add origin https://github.com/SEU_USUARIO/agenda-pastoral.git
 git push -u origin main
 ```
 
