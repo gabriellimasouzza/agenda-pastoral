@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Agenda Pastoral",
+    "slug": "agenda-pastoral",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#EFE8DB"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.souzaapps.agendapastoral",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#43614A"
+      },
+      "permissions": [
+        "SCHEDULE_EXACT_ALARM",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#43614A"
+        }
+      ],
+      "expo-task-manager",
+      "expo-background-fetch"
+    ]
+  }
+}
