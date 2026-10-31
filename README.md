@@ -82,8 +82,11 @@ e `npx eas build -p android --profile preview`.
 Três abas, só com ícones, na barra de baixo:
 - **Agenda** (inicial): hoje + 7 dias, dia a dia, só os dias que têm algo. Setas para
   ver os 8 dias anteriores/seguintes e botão "Hoje" para voltar. Não mostra pendências.
-- **Resumo**: as quatro seções (Compromissos, Aniversariantes, Datas importantes,
-  Pendências) com "Ver todos".
+- **Resumo**: o mês de calendário inteiro (dia 1 ao último dia), em quatro seções, nesta
+  ordem: Pendências (todas as em aberto), Compromissos, Aniversariantes e Datas
+  importantes, cada uma com "Ver todos". Ao tocar numa pendência, o card se abre em
+  dois botões: Concluída (apaga de vez, sem restaurar) e Editar. Setas ao lado do nome do mês navegam entre meses
+  (botão "Hoje" aparece fora do mês atual). Itens de dias que já passaram ficam apagados.
 - **Configurações**: backup (com data do último e aviso após 30 dias) e ministérios.
 
 O botão flutuante "+" (canto inferior direito, nas abas Agenda e Resumo) abre as
@@ -125,5 +128,7 @@ src/utils/datas.js          datas no fuso local do aparelho
 - Notificação sempre na barra, nunca alarme sonoro.
 - Agenda semanal = hoje + 7 dias (8 dias), relativa a hoje; navegação em blocos de 8 dias.
 - Aviso de backup fica nas Configurações, não na tela inicial.
+- Pendência concluída é apagada de vez (não há arquivo nem restaurar).
+- Resumo = mês de calendário inteiro, com as pendências em primeiro lugar.
 - Tema: paleta "Moderno" (verde `#43614A`, marrom `#8F5F3B`, fundo `#EFE8DB`);
   modo escuro derivado dela (verde clareado sobre marrom escuro).

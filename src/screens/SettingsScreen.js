@@ -49,7 +49,8 @@ export default function SettingsScreen() {
 
   async function exportar() {
     try {
-      await exportarBackup();
+      const r = await exportarBackup();
+      if (r.salvo) Alert.alert('Backup salvo', 'O arquivo foi salvo na pasta que você escolheu.');
     } catch (e) {
       Alert.alert('Não foi possível exportar', String(e?.message || e));
     }

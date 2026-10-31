@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import FadeInView from './FadeInView';
 
-export default function SectionCard({ titulo, itens, renderItem, vazio, onVerTodos, index = 0 }) {
+export default function SectionCard({ titulo, itens, renderItem, vazio, onVerTodos, index = 0, chave }) {
   const { colors, spacing, radius, fonts } = useTheme();
 
   return (
@@ -33,7 +33,7 @@ export default function SectionCard({ titulo, itens, renderItem, vazio, onVerTod
           ]}
         >
           {itens.map((item, i) => (
-            <View key={i}>
+            <View key={chave ? chave(item) : i}>
               {renderItem(item)}
               {i < itens.length - 1 && <View style={[styles.divisor, { backgroundColor: colors.border }]} />}
             </View>

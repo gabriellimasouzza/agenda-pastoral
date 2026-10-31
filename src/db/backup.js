@@ -1,5 +1,4 @@
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getDb } from './database';
 
@@ -15,15 +14,19 @@ export async function exportarBackup() {
     dump.dados[tabela] = await db.getAllAsync(`SELECT * FROM ${tabela}`);
   }
 
-  const nomeArquivo = `agenda-pastoral-backup-${dump.exportadoEm.slice(0, 10)}.json`;
-  const caminho = FileSystem.documentDirectory + nomeArquivo;
-  await FileSystem.writeAsStringAsync(caminho, JSON.stringify(dump, null, 2));
+  const nomeArquivo = `agenda-pastoral-backup-${dump.exportadoEm.slice(0, 10)}`;
 
-  if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(caminho, { mimeType: 'application/json', dialogTitle: 'Salvar backup' });
-  }
+  // Abre o seletor de pastas do Android (armazenamento) para o usuário escolher onde salvar.
+  const SAF = FileSystem.StorageAccessFramework;
+  const permissao = await SAF.requestDirectoryPermissionsAsync();
+  if (!permissao.granted) return { salvo: false };
+
+  const uri = await SAF.createFileAsync(permissao.directoryUri, nomeArquivo, 'application/json');
+  await FileSystem.writeAsStringAsync(uri, JSON.stringify(dump, null, 2), {
+    encoding: FileSystem.EncodingType.UTF8,
+  });
   await marcarBackupFeitoAgora();
-  return caminho;
+  return { salvo: true, uri };
 }
 
 // Importação SUBSTITUI tudo, conforme decidido.
