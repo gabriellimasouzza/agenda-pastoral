@@ -2,19 +2,20 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { listarOcorrenciasNaJanela } from '../db/compromissos';
+import { dataLocalStr, somarDias } from '../utils/datas';
 
 function hojeStr() {
-  return new Date().toISOString().slice(0, 10);
+  return dataLocalStr(new Date());
 }
 function daquiXDiasStr(x) {
-  const d = new Date();
-  d.setDate(d.getDate() + x);
-  return d.toISOString().slice(0, 10);
+  return dataLocalStr(somarDias(new Date(), x));
 }
 
 export default function CompromissosListScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts } = useTheme();
   const [lista, setLista] = useState([]);
 
@@ -30,7 +31,7 @@ export default function CompromissosListScreen({ navigation }) {
       <FlatList
         data={lista}
         keyExtractor={(item, i) => `${item.id}-${item.data}-${i}`}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 + insets.bottom }}
         renderItem={({ item }) => (
           <Pressable
             style={[styles.card, { backgroundColor: colors.card }]}
@@ -51,7 +52,7 @@ export default function CompromissosListScreen({ navigation }) {
           </Text>
         }
       />
-      <Pressable style={[styles.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('CompromissoForm', {})}>
+      <Pressable style={[styles.fab, { backgroundColor: colors.primary, bottom: 20 + insets.bottom }]} onPress={() => navigation.navigate('CompromissoForm', {})}>
         <Ionicons name="add" size={28} color={colors.onPrimary} />
       </Pressable>
     </View>

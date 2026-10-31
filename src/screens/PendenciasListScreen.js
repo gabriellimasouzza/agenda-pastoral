@@ -2,10 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { listarPendenciasAbertas, listarPendenciasArquivadas, concluirPendencia, reabrirPendencia } from '../db/pendencias';
 
 export default function PendenciasListScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts } = useTheme();
   const [abertas, setAbertas] = useState([]);
   const [arquivadas, setArquivadas] = useState([]);
@@ -29,7 +31,7 @@ export default function PendenciasListScreen({ navigation }) {
       <FlatList
         data={lista}
         keyExtractor={(i) => String(i.id)}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 + insets.bottom }}
         renderItem={({ item }) => (
           <View style={[styles.card, { backgroundColor: colors.card }]}>
             <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate('PendenciaForm', { id: item.id })}>
@@ -53,7 +55,7 @@ export default function PendenciasListScreen({ navigation }) {
           </Text>
         }
       />
-      <Pressable style={[styles.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('PendenciaForm', {})}>
+      <Pressable style={[styles.fab, { backgroundColor: colors.primary, bottom: 20 + insets.bottom }]} onPress={() => navigation.navigate('PendenciaForm', {})}>
         <Ionicons name="add" size={28} color={colors.onPrimary} />
       </Pressable>
     </View>

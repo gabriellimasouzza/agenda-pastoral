@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, Switch, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getDb } from '../db/database';
 import {
@@ -18,6 +19,7 @@ const TIPOS_RECORRENCIA = [
 ];
 
 export default function CompromissoFormScreen({ route, navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts, radius } = useTheme();
   const { id, data: dataOcorrenciaClicada } = route.params || {};
 
@@ -155,7 +157,7 @@ export default function CompromissoFormScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={{ padding: 20 }}>
+    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={{ padding: 20, paddingBottom: 40 + insets.bottom }}>
       <Campo label="Título" value={titulo} onChangeText={setTitulo} colors={colors} fonts={fonts} />
 
       <Text style={[styles.label, { color: colors.textSecondary, fontFamily: fonts.bodyMedium }]}>Data</Text>

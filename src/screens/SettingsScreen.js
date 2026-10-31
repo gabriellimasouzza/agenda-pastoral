@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { listarMinisterios, criarMinisterio, renomearMinisterio, apagarMinisterio } from '../db/ministerios';
-import { exportarBackup, importarBackup } from '../db/backup';
+import { exportarBackup, importarBackup, obterUltimoBackup } from '../db/backup';
 import { reagendarTudo } from '../notifications/notificationService';
 
 export default function SettingsScreen() {
@@ -13,8 +13,13 @@ export default function SettingsScreen() {
   const [novoNome, setNovoNome] = useState('');
   const [editandoId, setEditandoId] = useState(null);
   const [nomeEditado, setNomeEditado] = useState('');
+  const [ultimoBackup, setUltimoBackup] = useState(null);
+  const [carregouBackup, setCarregouBackup] = useState(false);
 
-  const carregar = useCallback(() => { listarMinisterios().then(setMinisterios); }, []);
+  const carregar = useCallback(() => {
+    listarMinisterios().then(setMinisterios);
+    obterUltimoBackup().then((d) => { setUltimoBackup(d); setCarregouBackup(true); });
+  }, []);
   useFocusEffect(carregar);
 
   async function adicionar() {
@@ -42,6 +47,15 @@ export default function SettingsScreen() {
     );
   }
 
+  async function exportar() {
+    try {
+      await exportarBackup();
+    } catch (e) {
+      Alert.alert('Não foi possível exportar', String(e?.message || e));
+    }
+    carregar();
+  }
+
   async function confirmarImportar() {
     Alert.alert(
       'Importar backup',
@@ -64,12 +78,12 @@ export default function SettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <FlatList
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
         data={ministerios}
         keyExtractor={(m) => String(m.id)}
         ListHeaderComponent={
           <>
-            <SecaoBackup colors={colors} fonts={fonts} radius={radius} onExportar={exportarBackup} onImportar={confirmarImportar} />
+            <SecaoBackup colors={colors} fonts={fonts} radius={radius} ultimoBackup={ultimoBackup} carregou={carregouBackup} onExportar={exportar} onImportar={confirmarImportar} />
             <Text style={[styles.tituloSecao, { color: colors.textPrimary, fontFamily: fonts.title }]}>Ministérios</Text>
             <View style={styles.linhaNovo}>
               <TextInput
@@ -117,10 +131,46 @@ export default function SettingsScreen() {
   );
 }
 
-function SecaoBackup({ colors, fonts, radius, onExportar, onImportar }) {
+function diasDesde(data) {
+  return Math.floor((Date.now() - data.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function SecaoBackup({ colors, fonts, radius, ultimoBackup, carregou, onExportar, onImportar }) {
+  const dias = ultimoBackup ? diasDesde(ultimoBackup) : null;
+  const atrasado = carregou && (!ultimoBackup || dias >= 30);
+
+  let status = '';
+  if (carregou) {
+    if (!ultimoBackup) status = 'Você ainda não fez nenhum backup.';
+    else {
+      const d = ultimoBackup;
+      const data = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      status = `Último backup: ${data}` + (dias === 0 ? ' (hoje)' : dias === 1 ? ' (ontem)' : ` (há ${dias} dias)`);
+    }
+  }
+
   return (
     <View style={{ marginBottom: 28 }}>
       <Text style={[styles.tituloSecao, { color: colors.textPrimary, fontFamily: fonts.title }]}>Backup</Text>
+
+      {carregou && (
+        <View style={[styles.statusBackup, { backgroundColor: atrasado ? colors.banner : colors.card, borderRadius: radius.md }]}>
+          <Ionicons
+            name={atrasado ? 'alert-circle-outline' : 'checkmark-circle-outline'}
+            size={20}
+            color={atrasado ? colors.warning : colors.success}
+          />
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Text style={{ color: colors.textPrimary, fontFamily: fonts.bodyMedium, fontSize: 14 }}>{status}</Text>
+            {atrasado && (
+              <Text style={{ color: colors.textSecondary, fontFamily: fonts.body, fontSize: 13, marginTop: 2 }}>
+                Recomendado: um backup por mês.
+              </Text>
+            )}
+          </View>
+        </View>
+      )}
+
       <Pressable style={[styles.botaoBackup, { backgroundColor: colors.card, borderRadius: radius.md }]} onPress={onExportar}>
         <Ionicons name="cloud-upload-outline" size={20} color={colors.primary} />
         <Text style={{ color: colors.textPrimary, fontFamily: fonts.bodyMedium, marginLeft: 10 }}>Exportar dados</Text>
@@ -141,4 +191,5 @@ const styles = StyleSheet.create({
   botaoAdicionar: { width: 46, alignItems: 'center', justifyContent: 'center' },
   itemMinisterio: { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 8 },
   botaoBackup: { flexDirection: 'row', alignItems: 'center', padding: 14 },
+  statusBackup: { flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 10 },
 });

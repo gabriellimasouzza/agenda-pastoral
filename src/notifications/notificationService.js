@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { listarAniversariantes, dataEfetivaNoAno } from '../db/aniversariantes';
 import { listarDatasImportantes } from '../db/datasImportantes';
 import { listarOcorrenciasNaJanela } from '../db/compromissos';
+import { dataLocalStr } from '../utils/datas';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -93,8 +94,8 @@ async function agendarDatasImportantes(hoje, fim) {
 
 async function agendarCompromissos(hoje, fim) {
   const ocorrencias = await listarOcorrenciasNaJanela(
-    hoje.toISOString().slice(0, 10),
-    fim.toISOString().slice(0, 10)
+    dataLocalStr(hoje),
+    dataLocalStr(fim)
   );
   for (const oc of ocorrencias) {
     if (!oc.lembrete_ativo) continue;

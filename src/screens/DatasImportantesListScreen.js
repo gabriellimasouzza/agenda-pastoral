@@ -2,12 +2,14 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { listarDatasImportantes } from '../db/datasImportantes';
 
 const ROTULOS = { casamento: 'Casamento', falecimento: 'Falecimento', outro: 'Outro' };
 
 export default function DatasImportantesListScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts } = useTheme();
   const [lista, setLista] = useState([]);
 
@@ -18,7 +20,7 @@ export default function DatasImportantesListScreen({ navigation }) {
       <FlatList
         data={lista}
         keyExtractor={(i) => String(i.id)}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 + insets.bottom }}
         renderItem={({ item }) => (
           <Pressable
             style={[styles.card, { backgroundColor: colors.card }]}
@@ -36,7 +38,7 @@ export default function DatasImportantesListScreen({ navigation }) {
           </Text>
         }
       />
-      <Pressable style={[styles.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('DataImportanteForm', {})}>
+      <Pressable style={[styles.fab, { backgroundColor: colors.primary, bottom: 20 + insets.bottom }]} onPress={() => navigation.navigate('DataImportanteForm', {})}>
         <Ionicons name="add" size={28} color={colors.onPrimary} />
       </Pressable>
     </View>

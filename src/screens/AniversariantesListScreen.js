@@ -2,10 +2,12 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { listarAniversariantes } from '../db/aniversariantes';
 
 export default function AniversariantesListScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts, spacing } = useTheme();
   const [lista, setLista] = useState([]);
 
@@ -20,7 +22,7 @@ export default function AniversariantesListScreen({ navigation }) {
       <FlatList
         data={lista}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ padding: 20 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 + insets.bottom }}
         renderItem={({ item }) => (
           <Pressable
             style={[styles.card, { backgroundColor: colors.card }]}
@@ -42,7 +44,7 @@ export default function AniversariantesListScreen({ navigation }) {
         }
       />
       <Pressable
-        style={[styles.fab, { backgroundColor: colors.primary }]}
+        style={[styles.fab, { backgroundColor: colors.primary, bottom: 20 + insets.bottom }]}
         onPress={() => navigation.navigate('AniversarianteForm', {})}
       >
         <Ionicons name="add" size={28} color={colors.onPrimary} />

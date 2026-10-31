@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   useFonts,
@@ -51,10 +52,12 @@ export default function App() {
   if (!fontsLoaded || !pronto) return null;
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <ThemeProvider>
-        <RootNavigation />
-      </ThemeProvider>
-    </View>
+    <SafeAreaProvider>
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <ThemeProvider>
+          <RootNavigation />
+        </ThemeProvider>
+      </View>
+    </SafeAreaProvider>
   );
 }

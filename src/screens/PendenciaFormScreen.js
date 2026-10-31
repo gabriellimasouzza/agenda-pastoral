@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getDb } from '../db/database';
 import { criarPendencia, atualizarPendencia, apagarPendencia } from '../db/pendencias';
 import { listarMinisterios } from '../db/ministerios';
 
 export default function PendenciaFormScreen({ route, navigation }) {
+  const insets = useSafeAreaInsets();
   const { colors, fonts, radius } = useTheme();
   const { id } = route.params || {};
   const [titulo, setTitulo] = useState('');
@@ -43,7 +45,7 @@ export default function PendenciaFormScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={{ padding: 20 }}>
+    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={{ padding: 20, paddingBottom: 40 + insets.bottom }}>
       <Campo label="Título" value={titulo} onChangeText={setTitulo} colors={colors} fonts={fonts} />
 
       <Text style={[styles.label, { color: colors.textSecondary, fontFamily: fonts.bodyMedium }]}>Ministério (opcional)</Text>

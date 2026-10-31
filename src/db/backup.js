@@ -62,6 +62,12 @@ export async function importarBackup() {
 
 // --- Lembrete mensal de backup ---
 
+export async function obterUltimoBackup() {
+  const db = await getDb();
+  const row = await db.getFirstAsync("SELECT valor FROM config WHERE chave='ultimo_backup'");
+  return row ? new Date(row.valor) : null;
+}
+
 export async function precisaLembrarBackup() {
   const db = await getDb();
   const row = await db.getFirstAsync("SELECT valor FROM config WHERE chave='ultimo_backup'");

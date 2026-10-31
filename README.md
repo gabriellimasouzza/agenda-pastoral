@@ -77,7 +77,22 @@ haver Android SDK; o que validei foi `npm ci` e `expo prebuild`, que passaram.
 O `eas.json` continua no projeto. Se preferir: `npx eas login`, `npx eas build:configure`
 e `npx eas build -p android --profile preview`.
 
+## Como o app está organizado
+
+Três abas, só com ícones, na barra de baixo:
+- **Agenda** (inicial): hoje + 7 dias, dia a dia, só os dias que têm algo. Setas para
+  ver os 8 dias anteriores/seguintes e botão "Hoje" para voltar. Não mostra pendências.
+- **Resumo**: as quatro seções (Compromissos, Aniversariantes, Datas importantes,
+  Pendências) com "Ver todos".
+- **Configurações**: backup (com data do último e aviso após 30 dias) e ministérios.
+
+O botão flutuante "+" (canto inferior direito, nas abas Agenda e Resumo) abre as
+opções de cadastro: Compromisso, Aniversariante, Data importante e Pendência.
+
 ## O que testar no aparelho (não validado no meu ambiente)
+
+- Barra de gestos: conferir se o rodapé e o topo não ficam mais sob a barra do Android.
+- Botão "+": abrir, escolher uma opção, cancelar tocando fora e com o botão voltar.
 
 - Notificações: criar um aniversário para amanhã e conferir o aviso das 18h/7h. Depois
   reiniciar o celular e conferir se os avisos continuam (a biblioteca de notificações
@@ -96,9 +111,10 @@ assets/                     ícone, splash e ícone de notificação (provisóri
 src/theme/                  paleta "Moderno" (claro e escuro) + tipografia
 src/db/                     SQLite, CRUD, recorrência, backup
 src/notifications/          agendamento local + tarefa em segundo plano
-src/navigation/             abas + telas empilhadas
-src/screens/                telas de cada seção
-src/components/             SectionCard, FadeInView
+src/navigation/             3 abas (ícones) + telas empilhadas
+src/screens/                Agenda, Resumo, Configurações, listas e formulários
+src/components/             FabMenu (botão +), SectionCard, FadeInView
+src/utils/datas.js          datas no fuso local do aparelho
 ```
 
 ## Decisões registradas
@@ -107,5 +123,7 @@ src/components/             SectionCard, FadeInView
 - Ministério removido fica inativo na lista; o nome continua nos registros antigos.
 - 29/fev em ano não bissexto → notifica em 28/fev.
 - Notificação sempre na barra, nunca alarme sonoro.
+- Agenda semanal = hoje + 7 dias (8 dias), relativa a hoje; navegação em blocos de 8 dias.
+- Aviso de backup fica nas Configurações, não na tela inicial.
 - Tema: paleta "Moderno" (verde `#43614A`, marrom `#8F5F3B`, fundo `#EFE8DB`);
   modo escuro derivado dela (verde clareado sobre marrom escuro).
