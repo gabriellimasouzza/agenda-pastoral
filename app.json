@@ -35,7 +35,13 @@
         }
       ],
       "expo-task-manager",
-      "expo-background-fetch"
+      "expo-background-fetch",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "O app lê seus contatos só quando você pede para buscar por uma sigla, para montar a lista de envio."
+        }
+      ]
     ]
   }
 }

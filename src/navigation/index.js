@@ -9,6 +9,7 @@ import { useTheme } from '../theme/ThemeContext';
 
 import AgendaScreen from '../screens/AgendaScreen';
 import HomeScreen from '../screens/HomeScreen';
+import MensagensScreen from '../screens/MensagensScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 import AniversariantesListScreen from '../screens/AniversariantesListScreen';
@@ -59,6 +60,11 @@ function Abas() {
         name="Resumo"
         component={HomeScreen}
         options={{ tabBarAccessibilityLabel: 'Resumo', tabBarIcon: icone('grid-outline', 'grid') }}
+      />
+      <Tab.Screen
+        name="Mensagens"
+        component={MensagensScreen}
+        options={{ tabBarAccessibilityLabel: 'Mensagens', tabBarIcon: icone('chatbubbles-outline', 'chatbubbles') }}
       />
       <Tab.Screen
         name="Configurações"

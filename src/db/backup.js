@@ -5,6 +5,7 @@ import { getDb } from './database';
 const TABELAS = [
   'ministerios', 'aniversariantes', 'datas_importantes',
   'compromissos', 'compromisso_excecoes', 'pendencias',
+  'msg_modelos', 'msg_contatos',
 ];
 
 export async function exportarBackup() {

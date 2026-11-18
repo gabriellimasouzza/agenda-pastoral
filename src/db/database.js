@@ -92,6 +92,20 @@ async function migrate(db) {
       concluida_em TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS msg_modelos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      texto TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS msg_contatos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      telefone TEXT NOT NULL UNIQUE,
+      enviado INTEGER NOT NULL DEFAULT 0,
+      selecionado INTEGER NOT NULL DEFAULT 1
+    );
+
     CREATE TABLE IF NOT EXISTS config (
       chave TEXT PRIMARY KEY,
       valor TEXT

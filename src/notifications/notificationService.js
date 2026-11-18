@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { listarAniversariantes, dataEfetivaNoAno } from '../db/aniversariantes';
 import { listarDatasImportantes } from '../db/datasImportantes';
 import { listarOcorrenciasNaJanela } from '../db/compromissos';
+import { listarPendenciasAbertas } from '../db/pendencias';
 import { dataLocalStr } from '../utils/datas';
 
 Notifications.setNotificationHandler({
@@ -34,6 +35,22 @@ export async function reagendarTudo() {
   await agendarAniversarios(hoje, fim);
   await agendarDatasImportantes(hoje, fim);
   await agendarCompromissos(hoje, fim);
+  await agendarPendencias();
+}
+
+// Enquanto houver pendência em aberto: um aviso todo dia às 07h (repete sozinho).
+// Se não houver nenhuma, nada é agendado. Toda criação/edição/conclusão chama reagendarTudo.
+async function agendarPendencias() {
+  const abertas = await listarPendenciasAbertas();
+  if (abertas.length === 0) return;
+  const n = abertas.length;
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Pendências',
+      body: n === 1 ? 'Você tem 1 pendência em aberto.' : `Você tem ${n} pendências em aberto.`,
+    },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 7, minute: 0 },
+  });
 }
 
 function proximaOcorrenciaAnual(dia, mes, hoje) {

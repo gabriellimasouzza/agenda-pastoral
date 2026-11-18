@@ -79,7 +79,7 @@ e `npx eas build -p android --profile preview`.
 
 ## Como o app está organizado
 
-Três abas, só com ícones, na barra de baixo:
+Quatro abas, só com ícones, na barra de baixo:
 - **Agenda** (inicial): hoje + 7 dias, dia a dia, só os dias que têm algo. Setas para
   ver os 8 dias anteriores/seguintes e botão "Hoje" para voltar. Não mostra pendências.
 - **Resumo**: o mês de calendário inteiro (dia 1 ao último dia), em quatro seções, nesta
@@ -87,6 +87,10 @@ Três abas, só com ícones, na barra de baixo:
   importantes, cada uma com "Ver todos". Ao tocar numa pendência, o card se abre em
   dois botões: Concluída (apaga de vez, sem restaurar) e Editar. Setas ao lado do nome do mês navegam entre meses
   (botão "Hoje" aparece fora do mês atual). Itens de dias que já passaram ficam apagados.
+- **Mensagens**: envio de mensagem em lote pelo WhatsApp (modelos com {nome}, busca de
+  contatos da agenda por sigla ou colagem manual, botão Próximo, marcação de enviados).
+  Modelos e lista entram no backup. Cada envio abre o WhatsApp com o texto pronto; você
+  só toca em enviar lá.
 - **Configurações**: backup (com data do último e aviso após 30 dias) e ministérios.
 
 O botão flutuante "+" (canto inferior direito, nas abas Agenda e Resumo) abre as
@@ -114,7 +118,7 @@ assets/                     ícone, splash e ícone de notificação (provisóri
 src/theme/                  paleta "Moderno" (claro e escuro) + tipografia
 src/db/                     SQLite, CRUD, recorrência, backup
 src/notifications/          agendamento local + tarefa em segundo plano
-src/navigation/             3 abas (ícones) + telas empilhadas
+src/navigation/             4 abas (ícones) + telas empilhadas
 src/screens/                Agenda, Resumo, Configurações, listas e formulários
 src/components/             FabMenu (botão +), SectionCard, FadeInView
 src/utils/datas.js          datas no fuso local do aparelho
@@ -125,6 +129,7 @@ src/utils/datas.js          datas no fuso local do aparelho
 - Tudo local, sem backend. Importação de backup **substitui tudo**.
 - Ministério removido fica inativo na lista; o nome continua nos registros antigos.
 - 29/fev em ano não bissexto → notifica em 28/fev.
+- Pendências: enquanto houver alguma em aberto, um aviso diário às 07h ("Você tem N pendências em aberto"); sem pendências, sem aviso.
 - Notificação sempre na barra, nunca alarme sonoro.
 - Agenda semanal = hoje + 7 dias (8 dias), relativa a hoje; navegação em blocos de 8 dias.
 - Aviso de backup fica nas Configurações, não na tela inicial.

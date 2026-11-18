@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { getDb } from '../db/database';
 import { criarPendencia, atualizarPendencia, apagarPendencia } from '../db/pendencias';
+import { reagendarTudo } from '../notifications/notificationService';
 import { listarMinisterios } from '../db/ministerios';
 
 export default function PendenciaFormScreen({ route, navigation }) {
@@ -34,13 +35,14 @@ export default function PendenciaFormScreen({ route, navigation }) {
     const dados = { titulo, ministerio_nome: ministerio, observacao };
     if (id) await atualizarPendencia(id, dados);
     else await criarPendencia(dados);
+    await reagendarTudo();
     navigation.goBack();
   }
 
   function confirmarExclusao() {
     Alert.alert('Apagar', `Apagar "${titulo}"?`, [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Apagar', style: 'destructive', onPress: async () => { await apagarPendencia(id); navigation.goBack(); } },
+      { text: 'Apagar', style: 'destructive', onPress: async () => { await apagarPendencia(id); await reagendarTudo(); navigation.goBack(); } },
     ]);
   }
 

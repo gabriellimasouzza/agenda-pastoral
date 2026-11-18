@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { apagarPendencia } from '../db/pendencias';
+import { reagendarTudo } from '../notifications/notificationService';
 
 /**
  * Pendência com "card que se divide": ao tocar, abre embaixo uma faixa com dois
@@ -14,6 +15,7 @@ export default function PendenciaItem({ item, onEditar, onConcluida }) {
 
   const concluir = async () => {
     await apagarPendencia(item.id);
+    await reagendarTudo();
     onConcluida && onConcluida(item.id);
   };
 
