@@ -74,6 +74,7 @@ Envio de mensagem em lote pelo WhatsApp, um contato por vez:
 
 ### ⚙️ Configurações
 - **Backup**: exportar para uma pasta à sua escolha e importar. Mostra a data do último backup e avisa depois de 30 dias.
+- **Horário dos avisos**: escolha a hora de cada tipo de aviso (padrão 18h, 7h, 7h e 7h).
 - **Ministérios**: lista editável, usada nos compromissos e pendências.
 
 ### 🔔 Notificações
@@ -85,6 +86,8 @@ Todas são locais, aparecem na barra de notificação e **nunca tocam som ou ala
 | Aniversários e datas importantes | **18h da véspera** e **7h do dia** |
 | Compromissos | **7h**, com a antecedência (em dias) que você escolher em cada compromisso |
 | Pendências | **Todo dia às 7h**, enquanto existir ao menos uma em aberto |
+
+Os quatro horários (véspera, dia, compromissos e pendências) podem ser mudados em **Configurações → Horário dos avisos**. Os horários acima são os padrões.
 
 ### Outros detalhes pensados para a rotina
 
@@ -287,8 +290,6 @@ Este é um projeto pessoal, mantido no tempo livre, então não prometo prazo. M
 ## Sobre
 
 Feito por **Gabriel**, pastor e desenvolvedor, sob a marca **Souza Apps**, para uso pessoal no ministério. Compartilhado na esperança de que ajude outros pastores, líderes e secretários a cuidar melhor das pessoas.
-
-> *"Tudo, porém, seja feito com decência e ordem."* (1 Coríntios 14.40)
 
 <!--
   Licença: ainda não definida. Antes de tornar o repositório público, escolha uma

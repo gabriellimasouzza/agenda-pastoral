@@ -5,6 +5,7 @@ import { listarDatasImportantes } from '../db/datasImportantes';
 import { listarOcorrenciasNaJanela } from '../db/compromissos';
 import { listarPendenciasAbertas } from '../db/pendencias';
 import { dataLocalStr } from '../utils/datas';
+import { lerHorarios, hhmmParaHM } from '../db/horarios';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -32,15 +33,19 @@ export async function reagendarTudo() {
   const fim = new Date(hoje);
   fim.setDate(fim.getDate() + DIAS_JANELA);
 
-  await agendarAniversarios(hoje, fim);
-  await agendarDatasImportantes(hoje, fim);
-  await agendarCompromissos(hoje, fim);
-  await agendarPendencias();
+  const hr = await lerHorarios();
+  const hv = hhmmParaHM(hr.vespera), hd = hhmmParaHM(hr.dia);
+  const hc = hhmmParaHM(hr.compromissos), hp = hhmmParaHM(hr.pendencias);
+
+  await agendarAniversarios(hoje, fim, hv, hd);
+  await agendarDatasImportantes(hoje, fim, hv, hd);
+  await agendarCompromissos(hoje, fim, hc);
+  await agendarPendencias(hp);
 }
 
 // Enquanto houver pendência em aberto: um aviso todo dia às 07h (repete sozinho).
 // Se não houver nenhuma, nada é agendado. Toda criação/edição/conclusão chama reagendarTudo.
-async function agendarPendencias() {
+async function agendarPendencias(hp) {
   const abertas = await listarPendenciasAbertas();
   if (abertas.length === 0) return;
   const n = abertas.length;
@@ -49,7 +54,7 @@ async function agendarPendencias() {
       title: 'Pendências',
       body: n === 1 ? 'Você tem 1 pendência em aberto.' : `Você tem ${n} pendências em aberto.`,
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 7, minute: 0 },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: hp.h, minute: hp.m },
   });
 }
 
@@ -61,13 +66,13 @@ function proximaOcorrenciaAnual(dia, mes, hoje) {
   return data;
 }
 
-async function agendarNotificacaoVesperaEDia(titulo, corpo, diaAlvo, mesAlvo, hoje, fim) {
+async function agendarNotificacaoVesperaEDia(titulo, corpo, diaAlvo, mesAlvo, hoje, fim, hv, hd) {
   const dataAlvo = proximaOcorrenciaAnual(diaAlvo, mesAlvo, hoje);
   if (dataAlvo > fim) return;
 
   const vespera = new Date(dataAlvo);
   vespera.setDate(vespera.getDate() - 1);
-  vespera.setHours(18, 0, 0, 0);
+  vespera.setHours(hv.h, hv.m, 0, 0);
   if (vespera > new Date()) {
     await Notifications.scheduleNotificationAsync({
       content: { title: titulo, body: corpo },
@@ -76,7 +81,7 @@ async function agendarNotificacaoVesperaEDia(titulo, corpo, diaAlvo, mesAlvo, ho
   }
 
   const diaDe = new Date(dataAlvo);
-  diaDe.setHours(7, 0, 0, 0);
+  diaDe.setHours(hd.h, hd.m, 0, 0);
   if (diaDe > new Date()) {
     await Notifications.scheduleNotificationAsync({
       content: { title: titulo, body: corpo },
@@ -85,31 +90,31 @@ async function agendarNotificacaoVesperaEDia(titulo, corpo, diaAlvo, mesAlvo, ho
   }
 }
 
-async function agendarAniversarios(hoje, fim) {
+async function agendarAniversarios(hoje, fim, hv, hd) {
   const lista = await listarAniversariantes();
   for (const pessoa of lista) {
     const { dia, mes } = dataEfetivaNoAno(pessoa.dia, pessoa.mes, hoje.getFullYear());
     await agendarNotificacaoVesperaEDia(
       'Aniversário',
       `${pessoa.nome} faz aniversário`,
-      dia, mes, hoje, fim
+      dia, mes, hoje, fim, hv, hd
     );
   }
 }
 
-async function agendarDatasImportantes(hoje, fim) {
+async function agendarDatasImportantes(hoje, fim, hv, hd) {
   const lista = await listarDatasImportantes();
   const rotulos = { casamento: 'Casamento', falecimento: 'Falecimento', outro: 'Data importante' };
   for (const item of lista) {
     await agendarNotificacaoVesperaEDia(
       rotulos[item.tipo] || 'Data importante',
       item.nome,
-      item.dia, item.mes, hoje, fim
+      item.dia, item.mes, hoje, fim, hv, hd
     );
   }
 }
 
-async function agendarCompromissos(hoje, fim) {
+async function agendarCompromissos(hoje, fim, hc) {
   const ocorrencias = await listarOcorrenciasNaJanela(
     dataLocalStr(hoje),
     dataLocalStr(fim)
@@ -120,7 +125,7 @@ async function agendarCompromissos(hoje, fim) {
     const dataCompromisso = new Date(y, m - 1, d);
     const disparo = new Date(dataCompromisso);
     disparo.setDate(disparo.getDate() - (oc.lembrete_dias_antes ?? 1));
-    disparo.setHours(7, 0, 0, 0);
+    disparo.setHours(hc.h, hc.m, 0, 0);
     if (disparo > new Date()) {
       await Notifications.scheduleNotificationAsync({
         content: {

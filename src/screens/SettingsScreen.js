@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, TextInput, FlatList, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, FlatList, Pressable, StyleSheet, Alert, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme/ThemeContext';
 import { listarMinisterios, criarMinisterio, renomearMinisterio, apagarMinisterio } from '../db/ministerios';
 import { exportarBackup, importarBackup, obterUltimoBackup } from '../db/backup';
 import { reagendarTudo } from '../notifications/notificationService';
+import { HORARIOS_PADRAO, lerHorarios, salvarHorario, hhmmParaHM, formatarHM } from '../db/horarios';
 
 export default function SettingsScreen() {
   const { colors, fonts, radius } = useTheme();
@@ -15,9 +17,12 @@ export default function SettingsScreen() {
   const [nomeEditado, setNomeEditado] = useState('');
   const [ultimoBackup, setUltimoBackup] = useState(null);
   const [carregouBackup, setCarregouBackup] = useState(false);
+  const [horarios, setHorarios] = useState(HORARIOS_PADRAO);
+  const [editandoHorario, setEditandoHorario] = useState(null); // chave do horário com o seletor aberto
 
   const carregar = useCallback(() => {
     listarMinisterios().then(setMinisterios);
+    lerHorarios().then(setHorarios);
     obterUltimoBackup().then((d) => { setUltimoBackup(d); setCarregouBackup(true); });
   }, []);
   useFocusEffect(carregar);
@@ -45,6 +50,13 @@ export default function SettingsScreen() {
         { text: 'Remover', style: 'destructive', onPress: () => apagarMinisterio(m.id).then(carregar) },
       ]
     );
+  }
+
+  async function mudarHorario(chave, date) {
+    const hhmm = formatarHM(date.getHours(), date.getMinutes());
+    await salvarHorario(chave, hhmm);
+    setHorarios((h) => ({ ...h, [chave]: hhmm }));
+    await reagendarTudo();
   }
 
   async function exportar() {
@@ -85,6 +97,10 @@ export default function SettingsScreen() {
         ListHeaderComponent={
           <>
             <SecaoBackup colors={colors} fonts={fonts} radius={radius} ultimoBackup={ultimoBackup} carregou={carregouBackup} onExportar={exportar} onImportar={confirmarImportar} />
+            <SecaoHorarios
+              colors={colors} fonts={fonts} radius={radius} horarios={horarios}
+              editando={editandoHorario} setEditando={setEditandoHorario} onMudar={mudarHorario}
+            />
             <Text style={[styles.tituloSecao, { color: colors.textPrimary, fontFamily: fonts.title }]}>Ministérios</Text>
             <View style={styles.linhaNovo}>
               <TextInput
@@ -128,6 +144,59 @@ export default function SettingsScreen() {
           </View>
         )}
       />
+    </View>
+  );
+}
+
+const LINHAS_HORARIO = [
+  { chave: 'vespera', rotulo: 'Aniversários e datas: véspera' },
+  { chave: 'dia', rotulo: 'Aniversários e datas: no dia' },
+  { chave: 'compromissos', rotulo: 'Compromissos' },
+  { chave: 'pendencias', rotulo: 'Pendências (todo dia)' },
+];
+
+function SecaoHorarios({ colors, fonts, radius, horarios, editando, setEditando, onMudar }) {
+  return (
+    <View style={{ marginBottom: 28 }}>
+      <Text style={[styles.tituloSecao, { color: colors.textPrimary, fontFamily: fonts.title }]}>Horário dos avisos</Text>
+      {LINHAS_HORARIO.map(({ chave, rotulo }) => {
+        const hm = hhmmParaHM(horarios[chave]) || hhmmParaHM(HORARIOS_PADRAO[chave]);
+        const valor = new Date();
+        valor.setHours(hm.h, hm.m, 0, 0);
+        const alterado = horarios[chave] !== HORARIOS_PADRAO[chave];
+        return (
+          <View key={chave}>
+            <Pressable
+              style={[styles.botaoBackup, { backgroundColor: colors.card, borderRadius: radius.md, marginBottom: 8, justifyContent: 'space-between' }]}
+              onPress={() => setEditando(chave)}
+            >
+              <Text style={{ color: colors.textPrimary, fontFamily: fonts.body, flex: 1 }}>{rotulo}</Text>
+              <Text style={{ color: colors.primary, fontFamily: fonts.bodyBold, fontSize: 16 }}>{horarios[chave]}</Text>
+              {alterado ? (
+                <Pressable
+                  onPress={() => onMudar(chave, (() => { const d = new Date(); const p = hhmmParaHM(HORARIOS_PADRAO[chave]); d.setHours(p.h, p.m, 0, 0); return d; })())}
+                  hitSlop={8}
+                  style={{ marginLeft: 12 }}
+                  accessibilityLabel="Voltar ao padrão"
+                >
+                  <Ionicons name="refresh-outline" size={18} color={colors.textSecondary} />
+                </Pressable>
+              ) : null}
+            </Pressable>
+            {editando === chave && (
+              <DateTimePicker
+                value={valor}
+                mode="time"
+                is24Hour
+                onChange={(ev, d) => {
+                  setEditando(Platform.OS === 'ios' ? chave : null);
+                  if (ev.type !== 'dismissed' && d) onMudar(chave, d);
+                }}
+              />
+            )}
+          </View>
+        );
+      })}
     </View>
   );
 }
