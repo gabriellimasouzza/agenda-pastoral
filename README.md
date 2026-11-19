@@ -16,8 +16,29 @@ Aniversariantes, compromissos, datas importantes, pendências e mensagens em lot
 
 ---
 
+## 📸 Telas
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/agenda.jpg" width="200" alt="Agenda: hoje mais 7 dias"><br><sub><b>Agenda</b></sub></td>
+    <td align="center"><img src="docs/screenshots/resumo.jpg" width="200" alt="Resumo do mês"><br><sub><b>Resumo</b></sub></td>
+    <td align="center"><img src="docs/screenshots/menu-adicionar.jpg" width="200" alt="Botão + com o cadastro rápido"><br><sub><b>Cadastro rápido</b></sub></td>
+    <td align="center"><img src="docs/screenshots/novo-compromisso.jpg" width="200" alt="Formulário de novo compromisso"><br><sub><b>Novo compromisso</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/novo-aniversariante.jpg" width="200" alt="Formulário de novo aniversariante"><br><sub><b>Novo aniversariante</b></sub></td>
+    <td align="center"><img src="docs/screenshots/mensagens.jpg" width="200" alt="Mensagens em lote pelo WhatsApp"><br><sub><b>Mensagens</b></sub></td>
+    <td align="center"><img src="docs/screenshots/configuracoes.jpg" width="200" alt="Backup, horário dos avisos e ministérios"><br><sub><b>Configurações</b></sub></td>
+  </tr>
+</table>
+</div>
+
+---
+
 ## 📖 Índice
 
+- [Telas](#-telas)
 - [Por que existe](#-por-que-existe)
 - [O que o app faz](#-o-que-o-app-faz)
 - [Privacidade](#-privacidade)
